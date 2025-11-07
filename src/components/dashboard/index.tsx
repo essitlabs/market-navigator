@@ -54,7 +54,12 @@ export default function Dashboard() {
             />
           )}
 
-          <RevisionsTable />
+          {selectedSector && (
+            <RevisionsTable 
+              selectedSector={selectedSector}
+              selectedPeriod={selectedPeriod}
+            />
+          )}
         </div>
       </main>
     </div>
