@@ -11,7 +11,7 @@ import { subWeeks, subMonths, subQuarters, subYears, format } from "date-fns";
 
 
 function getDateRange(period: string) {
-    const end = new Date("2015-05-09"); // fallback or latest available date
+    const end = new Date("2025-09-19"); // Last date in Excel: 9/19/2025
     let start: Date;
 
     switch (period) {
