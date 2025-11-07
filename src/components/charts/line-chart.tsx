@@ -188,11 +188,11 @@ export default function MarketFundamentalsChart({
               activeDot={{ r: 5 }}
             />
 
-            {/* Fundamental Trend Line - White straight line (render last for visibility) */}
+            {/* Fundamental Trend Line - Dark gray straight line (render last for visibility) */}
             <Line
               type="monotone"
               dataKey="Fundamental Trend Line"
-              stroke="#FFFFFF"
+              stroke="#1F2937"
               strokeWidth={2.5}
               dot={false}
               name="Fundamental Trend Line"
