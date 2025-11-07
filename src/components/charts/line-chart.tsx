@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   LineChart,
   Line,
@@ -13,10 +13,18 @@ import {
 } from "recharts";
 import { subWeeks, subMonths, subQuarters, subYears, format } from "date-fns";
 import ClientOnly from "./client-only";
+import { useLineChartData } from "@/hooks/useLineChartData";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
-// --- Helper: Date range logic (same as your heatmap)
+// --- Helper: Date range logic
 function getDateRange(period: string) {
-  const end = new Date("2015-05-09"); // fallback or last known date
+  const end = new Date("2025-09-19"); // Last date in Excel: 9/19/2025
   let start: Date;
 
   switch (period) {
@@ -43,103 +51,152 @@ function getDateRange(period: string) {
 }
 
 interface MarketFundamentalsChartProps {
-  selectedSector: string;
-  selectedPeriod: string;
-  selectedTab: string;
+  sector: string;
+  period: string;
 }
 
+type ViewMode = "Absolute" | "Multiple";
+
 export default function MarketFundamentalsChart({
-  selectedSector,
-  selectedPeriod,
-  selectedTab,
+  sector,
+  period,
 }: MarketFundamentalsChartProps) {
+  const [viewMode, setViewMode] = useState<ViewMode>("Absolute");
+
   const { startDate, endDate } = useMemo(
-    () => getDateRange(selectedPeriod),
-    [selectedPeriod]
+    () => getDateRange(period),
+    [period]
   );
 
-  // --- Mock raw values
-  const mockRawData = [
-    { date: "2015-04-10", price: 100, sales: 250, ebitda: 120 },
-    { date: "2015-04-17", price: 110, sales: 260, ebitda: 130 },
-    { date: "2015-04-24", price: 105, sales: 245, ebitda: 125 },
-    { date: "2015-05-01", price: 120, sales: 270, ebitda: 140 },
-    { date: "2015-05-08", price: 150, sales: 300, ebitda: 160 },
-  ];
+  // Fetch data from API
+  const { data: lineChartData, isLoading, isError } = useLineChartData({
+    sector,
+    startDate,
+    endDate,
+  });
 
-  // --- Calculate percentage changes
+  // Format data for chart
   const chartData = useMemo(() => {
-    return mockRawData.map((item, index) => {
-      if (index === 0) {
-        return {
-          date: item.date,
-          PriceChange: 0,
-          SalesRevision: 0,
-          EBITDARevision: 0,
-        };
-      }
+    if (!lineChartData?.data) return [];
+    
+    return lineChartData.data.map((point, index) => ({
+      id: `${point.date}-${index}`, // Unique key for each data point
+      date: point.date,
+      "Price": point.priceChange,
+      "Fundamental Absolute": point.fundamentalAbsolute,
+      "Fundamental Trend Line": point.trendLine,
+    }));
+  }, [lineChartData]);
 
-      const prev = mockRawData[index - 1];
-      const PriceChange = ((item.price - prev.price) / prev.price) * 100;
-      const SalesRevision = ((item.sales - prev.sales) / prev.sales) * 100;
-      const EBITDARevision = ((item.ebitda - prev.ebitda) / prev.ebitda) * 100;
+  if (isLoading) {
+    return (
+      <div className="relative w-full h-full flex items-center justify-center">
+        <div className="text-muted-foreground">Loading chart data...</div>
+      </div>
+    );
+  }
 
-      return {
-        date: item.date,
-        PriceChange,
-        SalesRevision,
-        EBITDARevision,
-      };
-    });
-  }, [mockRawData]);
+  if (isError) {
+    return (
+      <div className="relative w-full h-full flex items-center justify-center">
+        <div className="text-destructive">Failed to load chart data</div>
+      </div>
+    );
+  }
+
+  if (!chartData.length) {
+    return (
+      <div className="relative w-full h-full flex items-center justify-center">
+        <div className="text-muted-foreground">No data available for selected filters</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="relative w-full h-[420px] p-4 rounded-lg bg-white/5">
-      <h2 className="text-lg font-semibold mb-1 text-white">
-        Market Fundamentals — {selectedSector || "All Sectors"}
-      </h2>
+    <div className="relative w-full h-full">
+      <div className="absolute top-0 right-0 z-10">
+        <Select
+          value={viewMode}
+          onValueChange={(value: ViewMode) => setViewMode(value)}
+        >
+          <SelectTrigger className="w-[130px] h-8 text-xs">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Absolute">Absolute</SelectItem>
+            <SelectItem value="Multiple">Multiple</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
       <ClientOnly>
-        <ResponsiveContainer width="100%" height="80%">
+        <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={chartData}
-            margin={{ top: 20, right: 30, left: 0, bottom: 20 }}
+            margin={{ top: 30, right: 20, left: 10, bottom: 20 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
-            <XAxis dataKey="date" stroke="#ccc" tick={{ fontSize: 12 }} />
+            <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+            <XAxis 
+              dataKey="date" 
+              stroke="#9CA3AF" 
+              tick={{ fontSize: 11 }}
+              tickFormatter={(value) => {
+                // Format date to show only month/day
+                const [month, day] = value.split("/");
+                return `${month}/${day}`;
+              }}
+            />
             <YAxis
               tickFormatter={(v) => `${v.toFixed(1)}%`}
-              stroke="#ccc"
-              width={60}
+              stroke="#9CA3AF"
+              tick={{ fontSize: 11 }}
+              width={50}
             />
             <Tooltip
               formatter={(value: number) => `${value.toFixed(2)}%`}
               labelFormatter={(label) => `Date: ${label}`}
+              contentStyle={{
+                backgroundColor: "rgba(17, 24, 39, 0.95)",
+                border: "1px solid #374151",
+                borderRadius: "6px",
+              }}
             />
-            <Legend />
+            <Legend 
+              wrapperStyle={{ fontSize: "12px" }}
+              iconType="line"
+            />
 
+            {/* Price - Light green/yellow wavy line */}
             <Line
               type="monotone"
-              dataKey="PriceChange"
-              stroke="#4f8bff"
-              strokeWidth={2}
+              dataKey="Price"
+              stroke="#34D399"
+              strokeWidth={2.5}
               dot={{ r: 3 }}
-              name="Price Change"
+              name="Price"
+              activeDot={{ r: 5 }}
             />
+
+            {/* Fundamental Absolute - Light blue wavy line */}
             <Line
               type="monotone"
-              dataKey="SalesRevision"
-              stroke="#f39c12"
-              strokeWidth={2}
+              dataKey="Fundamental Absolute"
+              stroke="#60A5FA"
+              strokeWidth={2.5}
               dot={{ r: 3 }}
-              name="Sales Revision"
+              name="Fundamental Absolute"
+              activeDot={{ r: 5 }}
             />
+
+            {/* Fundamental Trend Line - Dark gray straight line (render last for visibility) */}
             <Line
               type="monotone"
-              dataKey="EBITDARevision"
-              stroke="#2ecc71"
-              strokeWidth={2}
-              dot={{ r: 3 }}
-              name="EBITDA Revision"
+              dataKey="Fundamental Trend Line"
+              stroke="#1F2937"
+              strokeWidth={2.5}
+              dot={false}
+              name="Fundamental Trend Line"
+              strokeDasharray="0"
             />
           </LineChart>
         </ResponsiveContainer>

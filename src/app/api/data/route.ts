@@ -49,13 +49,14 @@ export async function GET(req: Request) {
         const allColumns = Object.keys(data[0] || {});
         const dateColumns = allColumns.filter((col) => /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(col));
 
-        const parseMDY = (s: string) => {
-            const [m, d, yRaw] = s.split("/");
-            const y = Number(yRaw.length === 2 ? "20" + yRaw : yRaw);
-            return new Date(y, Number(m) - 1, Number(d)).getTime();
+        const parseMDY = (s: string): Date => {
+            const [m, d, y] = s.split("/").map(Number);
+            // Handle 2-digit years: 00-99 → 2000-2099
+            const fullYear = y < 100 ? 2000 + y : y;
+            return new Date(fullYear, m - 1, d);
         };
 
-        dateColumns.sort((a, b) => parseMDY(a) - parseMDY(b));
+        dateColumns.sort((a, b) => parseMDY(a).getTime() - parseMDY(b).getTime());
 
         let fromKey = dateColumns[0];
         let toKey = dateColumns[dateColumns.length - 1];
@@ -63,8 +64,14 @@ export async function GET(req: Request) {
         if (startDate && endDate) {
             const start = new Date(startDate);
             const end = new Date(endDate);
+            
+            // Reset time for accurate comparison
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+            
             const included = dateColumns.filter((col) => {
-                const d = new Date(col);
+                const d = parseMDY(col);
+                d.setHours(0, 0, 0, 0);
                 return d >= start && d <= end;
             });
             if (included.length >= 2) {

@@ -14,15 +14,8 @@ import { HeatmapTabs, TabId } from "../charts/heatmap/tabs";
 
 import MarketHeatmap from "../charts/marketcap";
 import MarketFundamentalsChart from "../charts/line-chart";
+import { useSectors } from "@/hooks/useSectors";
 
-const sectors = [
-  "Business Services",
-  "Tele-communication",
-  "Technology",
-  "Healthcare",
-  "Finance",
-  "Energy",
-];
 const methods = ["Absolute Revision", "Relative Revision", "Price Target"];
 const periods = ["Last week", "Last month", "Last quarter", "Last year"];
 
@@ -50,6 +43,9 @@ export default function MarketPerformance({
 
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 
+  // Fetch sectors dynamically from the Excel file
+  const { data: sectorsData, isLoading: sectorsLoading } = useSectors();
+  const sectors = sectorsData?.sectors || [];
 
   return (
     <div className="space-y-6">
@@ -62,11 +58,12 @@ export default function MarketPerformance({
           <div className="flex max-w-sm items-center gap-1">
             <Label htmlFor="picture">Sector</Label>
             <Select
-              defaultValue={sectors[0]}
+              value={selectedSector}
               onValueChange={(value) => onSectorChange(value)}
+              disabled={sectorsLoading}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Sector" />
+                <SelectValue placeholder={sectorsLoading ? "Loading..." : "Select Sector"} />
               </SelectTrigger>
               <SelectContent>
                 {sectors.map((sector) => (
@@ -142,8 +139,7 @@ export default function MarketPerformance({
           <div className="w-full h-80">
             <MarketFundamentalsChart
               sector={selectedSector}
-              startDate={selectedPeriod.startDate}
-              endDate={selectedPeriod.endDate}
+              period={selectedPeriod}
             />
           </div>
         </div>

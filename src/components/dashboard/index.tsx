@@ -1,16 +1,35 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Header from "@/components/layout/header"
 import MarketTabs from "./market-tabs"
 import MarketPerformance from "./market-performance"
 import RevisionsTable from "./revisions-table"
+import { useSectors } from "@/hooks/useSectors"
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState("total-market")
-  const [selectedSector, setSelectedSector] = useState("Business Services")
+  const [selectedSector, setSelectedSector] = useState("")
   const [selectedMethod, setSelectedMethod] = useState("Absolute Revision")
   const [selectedPeriod, setSelectedPeriod] = useState("Last week")
+
+  // Fetch sectors and set the first one as default
+  const { data: sectorsData } = useSectors()
+  
+  useEffect(() => {
+    if (sectorsData?.sectors && sectorsData.sectors.length > 0 && !selectedSector) {
+      setSelectedSector(sectorsData.sectors[0])
+    }
+  }, [sectorsData, selectedSector])
+
+  // Don't render until we have a sector selected
+  if (!selectedSector && sectorsData?.sectors && sectorsData.sectors.length > 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-muted-foreground">Loading dashboard...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -24,16 +43,23 @@ export default function Dashboard() {
         </div>
 
         <div className="space-y-6">
-          <MarketPerformance
-            selectedSector={selectedSector}
-            onSectorChange={setSelectedSector}
-            selectedMethod={selectedMethod}
-            onMethodChange={setSelectedMethod}
-            selectedPeriod={selectedPeriod}
-            onPeriodChange={setSelectedPeriod}
-          />
+          {selectedSector && (
+            <MarketPerformance
+              selectedSector={selectedSector}
+              onSectorChange={setSelectedSector}
+              selectedMethod={selectedMethod}
+              onMethodChange={setSelectedMethod}
+              selectedPeriod={selectedPeriod}
+              onPeriodChange={setSelectedPeriod}
+            />
+          )}
 
-          <RevisionsTable />
+          {selectedSector && (
+            <RevisionsTable 
+              selectedSector={selectedSector}
+              selectedPeriod={selectedPeriod}
+            />
+          )}
         </div>
       </main>
     </div>
