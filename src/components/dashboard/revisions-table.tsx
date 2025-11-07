@@ -106,35 +106,64 @@ export default function RevisionsTable({ selectedSector, selectedPeriod }: Revis
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border">
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white sticky left-0">
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 sticky left-0">
                 Ticker
               </th>
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white">
-                Price % Chg
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <div className="leading-tight">
+                  <div>Price%</div>
+                  <div>Change</div>
+                </div>
               </th>
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white">
-                Sales (NTM) % Chg
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <div className="leading-tight">
+                  <div>Sales NTM%</div>
+                  <div>Change</div>
+                </div>
               </th>
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white">
-                EBITDA (NTM) % Chg
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <div className="leading-tight">
+                  <div>EBITDA NTM%</div>
+                  <div>Change</div>
+                </div>
               </th>
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white">
-                Sales (NTM) % Chg vs L-Term
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <div className="leading-tight">
+                  <div>Sales NTM%</div>
+                  <div>Chg vs. L-</div>
+                  <div>Term</div>
+                </div>
               </th>
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white">
-                EBITDA (NTM) % Chg vs L-Term
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <div className="leading-tight">
+                  <div>EBITDA NTM%</div>
+                  <div>chg vs. L-</div>
+                  <div>Term</div>
+                </div>
               </th>
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white">
-                Sales Multiple % Chg
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <div className="leading-tight">
+                  <div>Sales</div>
+                  <div>Multiple%</div>
+                  <div>Change</div>
+                </div>
               </th>
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white">
-                EBITDA Multiple % Chg
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <div className="leading-tight">
+                  <div>EBITDA</div>
+                  <div>Multiple %</div>
+                  <div>Change</div>
+                </div>
               </th>
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white">
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                 Trend
               </th>
-              <th className="text-left py-3 px-3 font-semibold text-foreground bg-[#0D4D4D] text-white">
-                Trend Chg or Mean Revert
+              <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
+                <div className="leading-tight">
+                  <div>Trend Change</div>
+                  <div>or Mean</div>
+                  <div>revert</div>
+                </div>
               </th>
             </tr>
           </thead>
@@ -148,34 +177,34 @@ export default function RevisionsTable({ selectedSector, selectedPeriod }: Revis
             ) : (
               tableData.map((row, idx) => (
                 <tr key={row.Symbol} className="border-b border-border hover:bg-muted/30 transition-colors">
-                  <td className="py-3 px-3 font-medium text-foreground sticky left-0 bg-card">
+                  <td className="py-3 px-3 text-center font-medium text-foreground sticky left-0 bg-card">
                     {row.Symbol}
                   </td>
-                  <td className={`py-3 px-3 ${row.PriceChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <td className={`py-3 px-3 text-center ${row.PriceChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {formatPercent(row.PriceChange)}
                   </td>
-                  <td className={`py-3 px-3 ${row.SalesNTMChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <td className={`py-3 px-3 text-center ${row.SalesNTMChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {formatPercent(row.SalesNTMChange)}
                   </td>
-                  <td className={`py-3 px-3 ${row.EBITDANTMChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <td className={`py-3 px-3 text-center ${row.EBITDANTMChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {formatPercent(row.EBITDANTMChange)}
                   </td>
-                  <td className={`py-3 px-3 ${row.SalesNTMvsLTerm >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <td className={`py-3 px-3 text-center ${row.SalesNTMvsLTerm >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {formatPercent(row.SalesNTMvsLTerm)}
                   </td>
-                  <td className={`py-3 px-3 ${row.EBITDANTMvsLTerm >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <td className={`py-3 px-3 text-center ${row.EBITDANTMvsLTerm >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {formatPercent(row.EBITDANTMvsLTerm)}
                   </td>
-                  <td className={`py-3 px-3 ${row.SalesMultipleChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <td className={`py-3 px-3 text-center ${row.SalesMultipleChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {formatPercent(row.SalesMultipleChange)}
                   </td>
-                  <td className={`py-3 px-3 ${row.EBITDAMultipleChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                  <td className={`py-3 px-3 text-center ${row.EBITDAMultipleChange >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                     {formatPercent(row.EBITDAMultipleChange)}
                   </td>
-                  <td className="py-3 px-3 text-muted-foreground">
+                  <td className="py-3 px-3 text-center text-muted-foreground">
                     {getTrendDirection(row.SalesTrend)}
                   </td>
-                  <td className="py-3 px-3 text-muted-foreground">
+                  <td className="py-3 px-3 text-center text-muted-foreground">
                     {getTrendChange(row.SalesTrendChange)}
                   </td>
                 </tr>
