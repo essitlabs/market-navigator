@@ -107,7 +107,7 @@ export default function RevisionsTable({ selectedSector, selectedPeriod }: Revis
           <thead>
             <tr className="border-b border-border">
               <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 sticky left-0">
-                Ticker
+                Company Name
               </th>
               <th className="text-center py-3 px-3 font-semibold bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
                 <div className="leading-tight">
