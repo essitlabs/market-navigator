@@ -147,7 +147,10 @@ export async function GET(req: Request) {
         const chartData = priceChanges.map((point, index) => ({
             date: point.date,
             priceChange: point.priceChange,
-            fundamentalAbsolute: point.priceChange, // For now, same as price change (will be updated with formula)
+            // Fundamental Absolute: Apply a smoothing factor for demonstration
+            // This will be replaced with your actual formula
+            fundamentalAbsolute: index === 0 ? 0 : 
+                (priceChanges.slice(0, index + 1).reduce((sum, p) => sum + p.priceChange, 0) / (index + 1)),
             trendLine: trendLineData[index].trendValue,
             absolutePrice: point.absolutePrice,
         }));

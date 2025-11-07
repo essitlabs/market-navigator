@@ -166,14 +166,15 @@ export default function MarketFundamentalsChart({
               iconType="line"
             />
 
-            {/* Fundamental Trend Line - White straight line */}
+            {/* Price - Light green/yellow wavy line */}
             <Line
               type="monotone"
-              dataKey="Fundamental Trend Line"
-              stroke="#FFFFFF"
-              strokeWidth={2}
-              dot={false}
-              name="Fundamental Trend Line"
+              dataKey="Price"
+              stroke="#34D399"
+              strokeWidth={2.5}
+              dot={{ r: 3 }}
+              name="Price"
+              activeDot={{ r: 5 }}
             />
 
             {/* Fundamental Absolute - Light blue wavy line */}
@@ -181,19 +182,21 @@ export default function MarketFundamentalsChart({
               type="monotone"
               dataKey="Fundamental Absolute"
               stroke="#60A5FA"
-              strokeWidth={2}
-              dot={{ r: 2 }}
+              strokeWidth={2.5}
+              dot={{ r: 3 }}
               name="Fundamental Absolute"
+              activeDot={{ r: 5 }}
             />
 
-            {/* Price - Light green/yellow wavy line */}
+            {/* Fundamental Trend Line - White straight line (render last for visibility) */}
             <Line
               type="monotone"
-              dataKey="Price"
-              stroke="#34D399"
-              strokeWidth={2}
-              dot={{ r: 2 }}
-              name="Price"
+              dataKey="Fundamental Trend Line"
+              stroke="#FFFFFF"
+              strokeWidth={2.5}
+              dot={false}
+              name="Fundamental Trend Line"
+              strokeDasharray="0"
             />
           </LineChart>
         </ResponsiveContainer>
